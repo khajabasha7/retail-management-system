@@ -1,0 +1,31 @@
+.employees-container {
+  padding: 40px;
+  font-family: Arial, sans-serif;
+}
+
+.employees-container h1 {
+  margin-bottom: 20px;
+  color: #1e3c72;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+table th,
+table td {
+  border: 1px solid #ddd;
+  padding: 14px;
+  text-align: left;
+}
+
+table th {
+  background: #1e3c72;
+  color: white;
+}
+
+table tr:nth-child(even) {
+  background: #f2f2f2;
+}
