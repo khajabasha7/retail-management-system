@@ -46,6 +46,10 @@ const productRoutes = require("./routes/productRoutes");
 
 app.use("/api/products", productRoutes);
 
+const saleRoutes = require("./routes/saleRoutes");
+
+app.use("/api/sales", saleRoutes);
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err));
