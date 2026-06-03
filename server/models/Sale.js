@@ -2,12 +2,22 @@ const mongoose = require("mongoose");
 
 const saleSchema = new mongoose.Schema(
   {
-    productId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
+    billNumber: {
+      type: String,
+      unique: true,
     },
 
-    quantity: Number,
+    items: [
+      {
+        productId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+        },
+        name: String,
+        price: Number,
+        quantity: Number,
+      },
+    ],
 
     totalAmount: Number,
   },

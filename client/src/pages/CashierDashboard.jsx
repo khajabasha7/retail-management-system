@@ -46,10 +46,13 @@ function CashierDashboard() {
           <p>Create customer billing and reduce stock</p>
         </div>
 
-        <div className="cashier-card">
-          <h2>Transactions</h2>
-          <p>View completed sales transactions</p>
-        </div>
+        <div
+  className="cashier-card"
+  onClick={() => navigate("/transactions")}
+>
+  <h2>Transactions</h2>
+  <p>View completed sales</p>
+</div>
         
         <div
           className="cashier-card"

@@ -1,155 +1,3 @@
-// import { useState } from "react";
-// import API from "../api/api";
-
-// function Products() {
-//   const [name, setName] = useState("");
-//   const [sku, setSku] = useState("");
-//   const [price, setPrice] = useState("");
-//   const [stock, setStock] = useState("");
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     try {
-//       const token = localStorage.getItem("token");
-
-//       if (!token) {
-//         alert("Please login again");
-//         return;
-//       }
-
-//       const res = await API.post(
-//         "/products",
-//         {
-//           name,
-//           sku,
-//           price: Number(price),
-//           stock: Number(stock),
-//         },
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
-
-//       console.log(res.data);
-
-//       alert("Product Added Successfully");
-
-//       setName("");
-//       setSku("");
-//       setPrice("");
-//       setStock("");
-
-//     } catch (err) {
-//       console.error(err);
-
-//       alert(
-//         err.response?.data?.message ||
-//         err.response?.data?.error ||
-//         "Failed to add product"
-//       );
-//     }
-//   };
-
-//   return (
-//     <div style={styles.container}>
-//       <div style={styles.card}>
-//         <h1 style={styles.title}>Product Management</h1>
-
-//         <form onSubmit={handleSubmit}>
-//           <input
-//             style={styles.input}
-//             type="text"
-//             placeholder="Product Name"
-//             value={name}
-//             onChange={(e) => setName(e.target.value)}
-//             required
-//           />
-
-//           <input
-//             style={styles.input}
-//             type="text"
-//             placeholder="SKU"
-//             value={sku}
-//             onChange={(e) => setSku(e.target.value)}
-//             required
-//           />
-
-//           <input
-//             style={styles.input}
-//             type="number"
-//             placeholder="Price"
-//             value={price}
-//             onChange={(e) => setPrice(e.target.value)}
-//             required
-//           />
-
-//           <input
-//             style={styles.input}
-//             type="number"
-//             placeholder="Stock"
-//             value={stock}
-//             onChange={(e) => setStock(e.target.value)}
-//             required
-//           />
-
-//           <button type="submit" style={styles.button}>
-//             Add Product
-//           </button>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// }
-
-// const styles = {
-//   container: {
-//     minHeight: "100vh",
-//     display: "flex",
-//     justifyContent: "center",
-//     alignItems: "center",
-//     background: "#f4f6f9",
-//   },
-
-//   card: {
-//     width: "400px",
-//     background: "#fff",
-//     padding: "30px",
-//     borderRadius: "12px",
-//     boxShadow: "0px 5px 20px rgba(0,0,0,0.15)",
-//   },
-
-//   title: {
-//     textAlign: "center",
-//     marginBottom: "20px",
-//     color: "#2563eb",
-//   },
-
-//   input: {
-//     width: "100%",
-//     padding: "12px",
-//     marginBottom: "15px",
-//     border: "1px solid #ccc",
-//     borderRadius: "6px",
-//     fontSize: "16px",
-//     boxSizing: "border-box",
-//   },
-
-//   button: {
-//     width: "100%",
-//     padding: "12px",
-//     background: "#2563eb",
-//     color: "white",
-//     border: "none",
-//     borderRadius: "6px",
-//     cursor: "pointer",
-//     fontSize: "16px",
-//   },
-// };
-
-// export default Products;
 import { useState, useEffect } from "react";
 import API from "../api/api";
 
@@ -163,6 +11,9 @@ function Products() {
 
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+
+  const [stockQty, setStockQty] = useState({});
+  const [newPrice, setNewPrice] = useState({});
 
   useEffect(() => {
     fetchProducts();
@@ -201,7 +52,7 @@ function Products() {
         }
       );
 
-      alert("Product Added");
+      alert("Product Added Successfully");
 
       setName("");
       setSku("");
@@ -209,9 +60,93 @@ function Products() {
       setStock("");
 
       fetchProducts();
-
     } catch (err) {
-      alert(err.response?.data?.error || "Failed");
+      alert(
+        err.response?.data?.error ||
+        "Failed to add product"
+      );
+    }
+  };
+
+  const addStock = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const qty = stockQty[id];
+
+      if (!qty || qty <= 0) {
+        alert("Enter valid stock quantity");
+        return;
+      }
+
+      await API.put(
+        `/products/add-stock/${id}`,
+        {
+          quantity: Number(qty),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert("Stock Updated Successfully");
+
+      setStockQty({
+        ...stockQty,
+        [id]: "",
+      });
+
+      fetchProducts();
+    } catch (err) {
+      console.log(err);
+
+      alert(
+        err.response?.data?.message ||
+        "Failed to update stock"
+      );
+    }
+  };
+
+  const updatePrice = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const price = newPrice[id];
+
+      if (!price || price <= 0) {
+        alert("Enter valid price");
+        return;
+      }
+
+      await API.put(
+        `/products/update-price/${id}`,
+        {
+          price: Number(price),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert("Price Updated Successfully");
+
+      setNewPrice({
+        ...newPrice,
+        [id]: "",
+      });
+
+      fetchProducts();
+    } catch (err) {
+      console.log(err);
+
+      alert(
+        err.response?.data?.message ||
+        "Failed to update price"
+      );
     }
   };
 
@@ -225,8 +160,9 @@ function Products() {
         },
       });
 
-      fetchProducts();
+      alert("Product Deleted");
 
+      fetchProducts();
     } catch (err) {
       console.log(err);
     }
@@ -250,15 +186,15 @@ function Products() {
         />
 
         <input
-          placeholder="Price"
           type="number"
+          placeholder="Price"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
         />
 
         <input
-          placeholder="Stock"
           type="number"
+          placeholder="Initial Stock"
           value={stock}
           onChange={(e) => setStock(e.target.value)}
         />
@@ -286,7 +222,9 @@ function Products() {
             <th>SKU</th>
             <th>Price</th>
             <th>Stock</th>
-            <th>Action</th>
+            <th>Add Stock</th>
+            <th>Change Price</th>
+            <th>Delete</th>
           </tr>
         </thead>
 
@@ -295,8 +233,54 @@ function Products() {
             <tr key={product._id}>
               <td>{product.name}</td>
               <td>{product.sku}</td>
-              <td>{product.price}</td>
+              <td>₹{product.price}</td>
               <td>{product.stock}</td>
+
+              <td>
+                <input
+                  type="number"
+                  placeholder="Qty"
+                  value={stockQty[product._id] || ""}
+                  onChange={(e) =>
+                    setStockQty({
+                      ...stockQty,
+                      [product._id]: e.target.value,
+                    })
+                  }
+                  style={{ width: "70px" }}
+                />
+
+                <button
+                  onClick={() =>
+                    addStock(product._id)
+                  }
+                >
+                  Add
+                </button>
+              </td>
+
+              <td>
+                <input
+                  type="number"
+                  placeholder="New Price"
+                  value={newPrice[product._id] || ""}
+                  onChange={(e) =>
+                    setNewPrice({
+                      ...newPrice,
+                      [product._id]: e.target.value,
+                    })
+                  }
+                  style={{ width: "80px" }}
+                />
+
+                <button
+                  onClick={() =>
+                    updatePrice(product._id)
+                  }
+                >
+                  Update
+                </button>
+              </td>
 
               <td>
                 <button

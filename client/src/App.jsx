@@ -15,6 +15,7 @@ import SalesReports from "./pages/SalesReports";
 
 import NewSale from "./pages/NewSale";
 import CashierInventory from "./pages/CashierInventory";
+import Transactions from "./pages/Transactions";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 
@@ -117,7 +118,20 @@ function App() {
         }
       />
 
+
+        <Route
+  path="/transactions"
+  element={
+    <ProtectedRoute role="Cashier">
+      <Transactions />
+    </ProtectedRoute>
+  }
+/>
+
     </Routes>
+    
+      
+
   );
 }
 

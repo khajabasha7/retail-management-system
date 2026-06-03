@@ -4,6 +4,8 @@ const Sale = require("../models/Sale");
 
 const router = express.Router();
 
+
+// CREATE SALE
 router.post("/", async (req, res) => {
   try {
     const { items, totalAmount } = req.body;
@@ -26,19 +28,39 @@ router.post("/", async (req, res) => {
       }
 
       product.stock -= item.quantity;
-
       await product.save();
     }
 
+    const billNumber =
+      "BILL-" + Date.now();
+
     const sale = await Sale.create({
+      billNumber,
       items,
       totalAmount,
     });
 
     res.json({
-      message: "Sale completed",
+      message: "Sale completed successfully",
       sale,
     });
+
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+});
+
+
+// GET ALL SALES
+router.get("/", async (req, res) => {
+  try {
+    const sales = await Sale.find().sort({
+      createdAt: -1,
+    });
+
+    res.json(sales);
 
   } catch (err) {
     res.status(500).json({
