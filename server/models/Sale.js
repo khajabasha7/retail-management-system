@@ -19,6 +19,9 @@ const saleSchema = new mongoose.Schema(
       },
     ],
 
+    subtotal: Number,
+    discount: Number,
+    gst: Number,
     totalAmount: Number,
   },
   {

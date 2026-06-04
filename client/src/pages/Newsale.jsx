@@ -3,9 +3,12 @@ import API from "../api/api";
 
 function NewSale() {
   const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState("");
+
   const [productId, setProductId] = useState("");
   const [quantity, setQuantity] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
+
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
@@ -33,7 +36,9 @@ function NewSale() {
       name: selectedProduct.name,
       price: selectedProduct.price,
       quantity: Number(quantity),
-      total: selectedProduct.price * Number(quantity),
+      total:
+        selectedProduct.price *
+        Number(quantity),
     };
 
     setCart([...cart, item]);
@@ -44,7 +49,10 @@ function NewSale() {
   };
 
   const removeItem = (index) => {
-    const updatedCart = cart.filter((_, i) => i !== index);
+    const updatedCart = cart.filter(
+      (_, i) => i !== index
+    );
+
     setCart(updatedCart);
   };
 
@@ -53,6 +61,19 @@ function NewSale() {
     0
   );
 
+  const discount =
+    grandTotal > 1000
+      ? grandTotal * 0.1
+      : 0;
+
+  const taxableAmount =
+    grandTotal - discount;
+
+  const gst = taxableAmount * 0.18;
+
+  const finalAmount =
+    taxableAmount + gst;
+
   const completeSale = async () => {
     try {
       if (cart.length === 0) {
@@ -60,15 +81,19 @@ function NewSale() {
         return;
       }
 
-      await API.post("/sales", {
-        items: cart,
-        totalAmount: grandTotal,
-      });
+     await API.post("/sales", {
+  items: cart,
+  subtotal: grandTotal,
+  discount,
+  gst,
+  totalAmount: finalAmount,
+});
 
       alert("Sale Completed Successfully");
 
       setCart([]);
       fetchProducts();
+
     } catch (err) {
       console.log(err);
 
@@ -82,7 +107,18 @@ function NewSale() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h1 style={styles.title}>New Sale</h1>
+        <h1 style={styles.title}>
+          New Sale
+        </h1>
+
+        <input
+          style={styles.input}
+          placeholder="Search Product"
+          value={search}
+          onChange={(e) =>
+            setSearch(e.target.value)
+          }
+        />
 
         <select
           style={styles.input}
@@ -92,23 +128,34 @@ function NewSale() {
 
             setProductId(id);
 
-            const product = products.find(
-              (p) => p._id === id
-            );
+            const product =
+              products.find(
+                (p) => p._id === id
+              );
 
             setSelectedProduct(product);
           }}
         >
-          <option value="">Select Product</option>
+          <option value="">
+            Select Product
+          </option>
 
-          {products.map((product) => (
-            <option
-              key={product._id}
-              value={product._id}
-            >
-              {product.name}
-            </option>
-          ))}
+          {products
+            .filter((product) =>
+              product.name
+                .toLowerCase()
+                .includes(
+                  search.toLowerCase()
+                )
+            )
+            .map((product) => (
+              <option
+                key={product._id}
+                value={product._id}
+              >
+                {product.name}
+              </option>
+            ))}
         </select>
 
         <input
@@ -116,19 +163,28 @@ function NewSale() {
           type="number"
           placeholder="Quantity"
           value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
+          onChange={(e) =>
+            setQuantity(e.target.value)
+          }
         />
 
         {selectedProduct && (
           <div style={styles.detailsBox}>
             <h3>Product Details</h3>
 
-            <p>Name: {selectedProduct.name}</p>
-
-            <p>Price: ₹{selectedProduct.price}</p>
+            <p>
+              Name:
+              {selectedProduct.name}
+            </p>
 
             <p>
-              Available Stock: {selectedProduct.stock}
+              Price: ₹
+              {selectedProduct.price}
+            </p>
+
+            <p>
+              Available Stock:
+              {selectedProduct.stock}
             </p>
 
             <p>
@@ -159,13 +215,19 @@ function NewSale() {
               style={styles.cartItem}
             >
               <div>
-                <strong>{item.name}</strong>
+                <strong>
+                  {item.name}
+                </strong>
 
                 <p>
-                  ₹{item.price} × {item.quantity}
+                  ₹{item.price} ×{" "}
+                  {item.quantity}
                 </p>
 
-                <p>Total: ₹{item.total}</p>
+                <p>
+                  Total: ₹
+                  {item.total}
+                </p>
               </div>
 
               <button
@@ -180,9 +242,31 @@ function NewSale() {
           ))}
         </div>
 
-        <h2 style={styles.total}>
-          Grand Total: ₹{grandTotal}
-        </h2>
+        <div style={styles.billBox}>
+          <h3>Bill Summary</h3>
+
+          <p>
+            Subtotal: ₹
+            {grandTotal.toFixed(2)}
+          </p>
+
+          <p>
+            Discount: ₹
+            {discount.toFixed(2)}
+          </p>
+
+          <p>
+            GST (18%): ₹
+            {gst.toFixed(2)}
+          </p>
+
+          <hr />
+
+          <h2>
+            Final Amount: ₹
+            {finalAmount.toFixed(2)}
+          </h2>
+        </div>
 
         <button
           style={styles.saleBtn}
@@ -209,7 +293,8 @@ const styles = {
     background: "#fff",
     padding: "30px",
     borderRadius: "12px",
-    boxShadow: "0 5px 20px rgba(0,0,0,0.1)",
+    boxShadow:
+      "0 5px 20px rgba(0,0,0,0.1)",
   },
 
   title: {
@@ -267,10 +352,11 @@ const styles = {
     cursor: "pointer",
   },
 
-  total: {
-    textAlign: "right",
+  billBox: {
+    background: "#eef6ff",
+    padding: "15px",
+    borderRadius: "8px",
     marginTop: "20px",
-    color: "#2563eb",
   },
 
   saleBtn: {
@@ -282,6 +368,7 @@ const styles = {
     borderRadius: "6px",
     cursor: "pointer",
     fontSize: "16px",
+    marginTop: "20px",
   },
 };
 
