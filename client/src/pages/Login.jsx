@@ -6,13 +6,19 @@ import "./login.css";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
     setLoading(true);
+    setMessage("");
+    setErrorMsg("");
 
     try {
       const res = await API.post("/auth/login", {
@@ -20,34 +26,41 @@ function Login() {
         password,
       });
 
-      // Save token
-      localStorage.setItem("token", res.data.token);
+      localStorage.setItem(
+        "token",
+        res.data.token
+      );
 
-      // Save role
-      localStorage.setItem("role", res.data.user.role);
+      localStorage.setItem(
+        "role",
+        res.data.user.role
+      );
 
-      // Save name
-      localStorage.setItem("name", res.data.user.name);
+      localStorage.setItem(
+        "name",
+        res.data.user.name
+      );
 
-      alert("Login Successful");
+      setMessage("✅ Login Successful");
 
-      // Redirect based on role
-      const role = res.data.user.role;
+      setTimeout(() => {
+        const role = res.data.user.role;
 
-      if (role === "Admin") {
-        navigate("/admin");
-      } else if (role === "Manager") {
-        navigate("/manager");
-      } else {
-        navigate("/cashier");
-      }
+        if (role === "Admin") {
+          navigate("/admin");
+        } else if (role === "Manager") {
+          navigate("/manager");
+        } else {
+          navigate("/cashier");
+        }
+      }, 1000);
 
     } catch (error) {
       console.log(error);
 
-      alert(
+      setErrorMsg(
         error.response?.data?.message ||
-        "Login failed. Check credentials"
+        "Invalid Email or Password"
       );
     } finally {
       setLoading(false);
@@ -63,6 +76,32 @@ function Login() {
           Retail System Login
         </h2>
 
+        {message && (
+          <p
+            style={{
+              color: "green",
+              textAlign: "center",
+              marginBottom: "15px",
+              fontWeight: "bold",
+            }}
+          >
+            {message}
+          </p>
+        )}
+
+        {errorMsg && (
+          <p
+            style={{
+              color: "red",
+              textAlign: "center",
+              marginBottom: "15px",
+              fontWeight: "bold",
+            }}
+          >
+            {errorMsg}
+          </p>
+        )}
+
         <form onSubmit={handleLogin}>
 
           <div className="form-group">
@@ -72,7 +111,9 @@ function Login() {
               type="email"
               placeholder="Enter Email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) =>
+                setEmail(e.target.value)
+              }
               required
             />
           </div>
@@ -84,7 +125,9 @@ function Login() {
               type="password"
               placeholder="Enter Password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) =>
+                setPassword(e.target.value)
+              }
               required
             />
           </div>
@@ -94,11 +137,15 @@ function Login() {
             disabled={loading}
             className="login-button"
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading
+              ? "Logging in..."
+              : "Login"}
           </button>
 
         </form>
+
       </div>
+
     </div>
   );
 }
