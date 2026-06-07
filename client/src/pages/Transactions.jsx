@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import API from "../api/api";
+import { useNavigate } from "react-router-dom";
 
 function Transactions() {
   const [sales, setSales] = useState([]);
   const [searchDate, setSearchDate] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchSales();
@@ -30,78 +33,124 @@ function Transactions() {
   });
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h1>Transactions</h1>
+    <div style={styles.container}>
+      <div style={styles.card}>
 
-      <div style={{ marginBottom: "20px" }}>
-        <label>
-          Search By Date:
-        </label>
+        {/* HEADER */}
+        <div style={styles.header}>
+          <button onClick={() => navigate(-1)} style={styles.backBtn}>
+            Back
+          </button>
 
-        <input
-          type="date"
-          value={searchDate}
-          onChange={(e) =>
-            setSearchDate(e.target.value)
-          }
-          style={{
-            marginLeft: "10px",
-            padding: "5px",
-          }}
-        />
-      </div>
+          <h1 style={styles.title}>Transactions</h1>
+        </div>
 
-      <table border="1" cellPadding="10">
-        <thead>
-          <tr>
-            <th>Bill Number</th>
-            <th>Date & Time</th>
-            <th>Items Purchased</th>
-            <th>Quantity</th>
-            <th>Total Amount</th>
-          </tr>
-        </thead>
+        {/* DATE FILTER */}
+        <div style={{ marginBottom: "20px" }}>
+          <label>Search By Date: </label>
 
-        <tbody>
-          {filteredSales.map((sale) => (
-            <tr key={sale._id}>
-              <td>{sale.billNumber}</td>
+          <input
+            type="date"
+            value={searchDate}
+            onChange={(e) => setSearchDate(e.target.value)}
+            style={styles.input}
+          />
+        </div>
 
-              <td>
-                {new Date(
-                  sale.createdAt
-                ).toLocaleString()}
-              </td>
-
-              <td>
-                {sale.items?.map(
-                  (item, index) => (
-                    <div key={index}>
-                      {item.name}
-                    </div>
-                  )
-                )}
-              </td>
-
-              <td>
-                {sale.items?.map(
-                  (item, index) => (
-                    <div key={index}>
-                      {item.quantity}
-                    </div>
-                  )
-                )}
-              </td>
-
-              <td>
-                ₹{sale.totalAmount}
-              </td>
+        {/* TABLE */}
+        <table style={styles.table}>
+          <thead>
+            <tr>
+              <th>Bill Number</th>
+              <th>Date & Time</th>
+              <th>Items Purchased</th>
+              <th>Quantity</th>
+              <th>Total Amount</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {filteredSales.map((sale) => (
+              <tr key={sale._id}>
+                <td>{sale.billNumber}</td>
+
+                <td>
+                  {new Date(sale.createdAt).toLocaleString()}
+                </td>
+
+                <td>
+                  {sale.items?.map((item, index) => (
+                    <div key={index}>{item.name}</div>
+                  ))}
+                </td>
+
+                <td>
+                  {sale.items?.map((item, index) => (
+                    <div key={index}>{item.quantity}</div>
+                  ))}
+                </td>
+
+                <td>₹{sale.totalAmount}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+      </div>
     </div>
   );
 }
+
+const styles = {
+  container: {
+    padding: "30px",
+    background: "#f4f6f9",
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+  },
+
+  card: {
+    width: "900px",
+    background: "#fff",
+    padding: "20px",
+    borderRadius: "10px",
+    boxShadow: "0 5px 20px rgba(0,0,0,0.1)",
+  },
+
+  header: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: "20px",
+  },
+
+  title: {
+    color: "#2563eb",
+    flex: 1,
+    textAlign: "center",
+  },
+
+  backBtn: {
+    background: "#2563eb",
+    color: "#fff",
+    border: "none",
+    padding: "10px 14px",
+    borderRadius: "6px",
+    cursor: "pointer",
+  },
+
+  input: {
+    marginLeft: "10px",
+    padding: "6px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+  },
+
+  table: {
+    width: "100%",
+    borderCollapse: "collapse",
+  },
+};
 
 export default Transactions;

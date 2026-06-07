@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../api/api";
+import { useNavigate } from "react-router-dom";
 
 function NewSale() {
   const [products, setProducts] = useState([]);
@@ -10,6 +11,8 @@ function NewSale() {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const [cart, setCart] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProducts();
@@ -36,9 +39,7 @@ function NewSale() {
       name: selectedProduct.name,
       price: selectedProduct.price,
       quantity: Number(quantity),
-      total:
-        selectedProduct.price *
-        Number(quantity),
+      total: selectedProduct.price * Number(quantity),
     };
 
     setCart([...cart, item]);
@@ -49,30 +50,19 @@ function NewSale() {
   };
 
   const removeItem = (index) => {
-    const updatedCart = cart.filter(
-      (_, i) => i !== index
-    );
-
+    const updatedCart = cart.filter((_, i) => i !== index);
     setCart(updatedCart);
   };
 
-  const grandTotal = cart.reduce(
-    (sum, item) => sum + item.total,
-    0
-  );
+  const grandTotal = cart.reduce((sum, item) => sum + item.total, 0);
 
-  const discount =
-    grandTotal > 1000
-      ? grandTotal * 0.1
-      : 0;
+  const discount = grandTotal > 1000 ? grandTotal * 0.1 : 0;
 
-  const taxableAmount =
-    grandTotal - discount;
+  const taxableAmount = grandTotal - discount;
 
   const gst = taxableAmount * 0.18;
 
-  const finalAmount =
-    taxableAmount + gst;
+  const finalAmount = taxableAmount + gst;
 
   const completeSale = async () => {
     try {
@@ -81,43 +71,42 @@ function NewSale() {
         return;
       }
 
-     await API.post("/sales", {
-  items: cart,
-  subtotal: grandTotal,
-  discount,
-  gst,
-  totalAmount: finalAmount,
-});
+      await API.post("/sales", {
+        items: cart,
+        subtotal: grandTotal,
+        discount,
+        gst,
+        totalAmount: finalAmount,
+      });
 
       alert("Sale Completed Successfully");
 
       setCart([]);
       fetchProducts();
-
     } catch (err) {
       console.log(err);
-
-      alert(
-        err.response?.data?.message ||
-        "Failed to complete sale"
-      );
+      alert(err.response?.data?.message || "Failed to complete sale");
     }
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h1 style={styles.title}>
-          New Sale
-        </h1>
+        
+        {/* HEADER */}
+        <div style={styles.header}>
+          <button onClick={() => navigate(-1)} style={styles.backBtn}>
+            ⬅ Back
+          </button>
+
+          <h1 style={styles.title}>New Sale</h1>
+        </div>
 
         <input
           style={styles.input}
           placeholder="Search Product"
           value={search}
-          onChange={(e) =>
-            setSearch(e.target.value)
-          }
+          onChange={(e) => setSearch(e.target.value)}
         />
 
         <select
@@ -125,34 +114,20 @@ function NewSale() {
           value={productId}
           onChange={(e) => {
             const id = e.target.value;
-
             setProductId(id);
 
-            const product =
-              products.find(
-                (p) => p._id === id
-              );
-
+            const product = products.find((p) => p._id === id);
             setSelectedProduct(product);
           }}
         >
-          <option value="">
-            Select Product
-          </option>
+          <option value="">Select Product</option>
 
           {products
             .filter((product) =>
-              product.name
-                .toLowerCase()
-                .includes(
-                  search.toLowerCase()
-                )
+              product.name.toLowerCase().includes(search.toLowerCase())
             )
             .map((product) => (
-              <option
-                key={product._id}
-                value={product._id}
-              >
+              <option key={product._id} value={product._id}>
                 {product.name}
               </option>
             ))}
@@ -163,78 +138,45 @@ function NewSale() {
           type="number"
           placeholder="Quantity"
           value={quantity}
-          onChange={(e) =>
-            setQuantity(e.target.value)
-          }
+          onChange={(e) => setQuantity(e.target.value)}
         />
 
         {selectedProduct && (
           <div style={styles.detailsBox}>
             <h3>Product Details</h3>
-
-            <p>
-              Name:
-              {selectedProduct.name}
-            </p>
-
-            <p>
-              Price: ₹
-              {selectedProduct.price}
-            </p>
-
-            <p>
-              Available Stock:
-              {selectedProduct.stock}
-            </p>
-
+            <p>Name: {selectedProduct.name}</p>
+            <p>Price: ₹{selectedProduct.price}</p>
+            <p>Available Stock: {selectedProduct.stock}</p>
             <p>
               Amount: ₹
-              {selectedProduct.price *
-                (Number(quantity) || 0)}
+              {selectedProduct.price * (Number(quantity) || 0)}
             </p>
           </div>
         )}
 
-        <button
-          style={styles.addBtn}
-          onClick={addToCart}
-        >
+        <button style={styles.addBtn} onClick={addToCart}>
           Add To Cart
         </button>
 
+        {/* CART */}
         <div style={styles.cart}>
           <h2>Cart</h2>
 
-          {cart.length === 0 && (
-            <p>No products added</p>
-          )}
+          {cart.length === 0 && <p>No products added</p>}
 
           {cart.map((item, index) => (
-            <div
-              key={index}
-              style={styles.cartItem}
-            >
+            <div key={index} style={styles.cartItem}>
               <div>
-                <strong>
-                  {item.name}
-                </strong>
-
+                <strong>{item.name}</strong>
                 <p>
-                  ₹{item.price} ×{" "}
-                  {item.quantity}
+                  ₹{item.price} × {item.quantity}
                 </p>
-
-                <p>
-                  Total: ₹
-                  {item.total}
-                </p>
+                <p>Total: ₹{item.total}</p>
               </div>
 
               <button
                 style={styles.deleteBtn}
-                onClick={() =>
-                  removeItem(index)
-                }
+                onClick={() => removeItem(index)}
               >
                 Remove
               </button>
@@ -242,36 +184,20 @@ function NewSale() {
           ))}
         </div>
 
+        {/* BILL */}
         <div style={styles.billBox}>
           <h3>Bill Summary</h3>
 
-          <p>
-            Subtotal: ₹
-            {grandTotal.toFixed(2)}
-          </p>
-
-          <p>
-            Discount: ₹
-            {discount.toFixed(2)}
-          </p>
-
-          <p>
-            GST (18%): ₹
-            {gst.toFixed(2)}
-          </p>
+          <p>Subtotal: ₹{grandTotal.toFixed(2)}</p>
+          <p>Discount: ₹{discount.toFixed(2)}</p>
+          <p>GST (18%): ₹{gst.toFixed(2)}</p>
 
           <hr />
 
-          <h2>
-            Final Amount: ₹
-            {finalAmount.toFixed(2)}
-          </h2>
+          <h2>Final Amount: ₹{finalAmount.toFixed(2)}</h2>
         </div>
 
-        <button
-          style={styles.saleBtn}
-          onClick={completeSale}
-        >
+        <button style={styles.saleBtn} onClick={completeSale}>
           Complete Sale
         </button>
       </div>
@@ -293,14 +219,29 @@ const styles = {
     background: "#fff",
     padding: "30px",
     borderRadius: "12px",
-    boxShadow:
-      "0 5px 20px rgba(0,0,0,0.1)",
+    boxShadow: "0 5px 20px rgba(0,0,0,0.1)",
+  },
+
+  header: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: "15px",
   },
 
   title: {
     textAlign: "center",
     color: "#2563eb",
-    marginBottom: "20px",
+    flex: 1,
+  },
+
+  backBtn: {
+    background: "#2563eb",
+    color: "#fff",
+    border: "none",
+    padding: "10px 14px",
+    borderRadius: "6px",
+    cursor: "pointer",
   },
 
   input: {
