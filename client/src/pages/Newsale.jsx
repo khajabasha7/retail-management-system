@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
 import API from "../api/api";
 import { useNavigate } from "react-router-dom";
+import "./Newsale.css";
 
 function NewSale() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
-
-  const [productId, setProductId] = useState("");
   const [quantity, setQuantity] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
-
   const [cart, setCart] = useState([]);
 
   const navigate = useNavigate();
@@ -21,12 +19,18 @@ function NewSale() {
   const fetchProducts = async () => {
     try {
       const res = await API.get("/products");
-      setProducts(res.data);
+      setProducts(res.data || []);
     } catch (err) {
       console.log(err);
       alert("Failed to load products");
     }
   };
+
+  const filteredProducts = (products || []).filter((product) =>
+    (product?.name || "")
+      .toLowerCase()
+      .startsWith(search.toLowerCase())
+  );
 
   const addToCart = () => {
     if (!selectedProduct || !quantity) {
@@ -44,24 +48,23 @@ function NewSale() {
 
     setCart([...cart, item]);
 
-    setProductId("");
+    setSearch("");
     setQuantity("");
     setSelectedProduct(null);
   };
 
   const removeItem = (index) => {
-    const updatedCart = cart.filter((_, i) => i !== index);
-    setCart(updatedCart);
+    setCart(cart.filter((_, i) => i !== index));
   };
 
-  const grandTotal = cart.reduce((sum, item) => sum + item.total, 0);
+  const grandTotal = (cart || []).reduce(
+    (sum, item) => sum + (item?.total || 0),
+    0
+  );
 
   const discount = grandTotal > 1000 ? grandTotal * 0.1 : 0;
-
   const taxableAmount = grandTotal - discount;
-
   const gst = taxableAmount * 0.18;
-
   const finalAmount = taxableAmount + gst;
 
   const completeSale = async () => {
@@ -90,92 +93,97 @@ function NewSale() {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        
+    <div className="container">
+      <div className="newsale-card">
+
         {/* HEADER */}
-        <div style={styles.header}>
-          <button onClick={() => navigate(-1)} style={styles.backBtn}>
+        <div className="newsale-header">
+          <button onClick={() => navigate(-1)} className="back-btn">
             ⬅ Back
           </button>
 
-          <h1 style={styles.title}>New Sale</h1>
+          <h1>New Sale</h1>
         </div>
 
+        {/* SEARCH */}
         <input
-          style={styles.input}
+          className="newsale-input"
           placeholder="Search Product"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setSelectedProduct(null);
+          }}
         />
 
-        <select
-          style={styles.input}
-          value={productId}
-          onChange={(e) => {
-            const id = e.target.value;
-            setProductId(id);
+        {/* SUGGESTIONS */}
+        {search && !selectedProduct && (
+          <div className="suggestion-box">
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
+                <div
+                  key={product._id}
+                  className="suggestion-item"
+                  onClick={() => {
+                    setSelectedProduct(product);
+                    setSearch(product.name);
+                  }}
+                >
+                  {product.name}
+                </div>
+              ))
+            ) : (
+              <div className="no-data">No products found</div>
+            )}
+          </div>
+        )}
 
-            const product = products.find((p) => p._id === id);
-            setSelectedProduct(product);
-          }}
-        >
-          <option value="">Select Product</option>
-
-          {products
-            .filter((product) =>
-              product.name.toLowerCase().includes(search.toLowerCase())
-            )
-            .map((product) => (
-              <option key={product._id} value={product._id}>
-                {product.name}
-              </option>
-            ))}
-        </select>
-
+        {/* QUANTITY */}
         <input
-          style={styles.input}
+          className="newsale-input"
           type="number"
           placeholder="Quantity"
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
         />
 
+        {/* PRODUCT DETAILS */}
         {selectedProduct && (
-          <div style={styles.detailsBox}>
+          <div className="details-box">
             <h3>Product Details</h3>
-            <p>Name: {selectedProduct.name}</p>
-            <p>Price: ₹{selectedProduct.price}</p>
-            <p>Available Stock: {selectedProduct.stock}</p>
+
+            <p><strong>Name:</strong> {selectedProduct.name}</p>
+            <p><strong>Price:</strong> ₹{selectedProduct.price}</p>
+            <p><strong>Stock:</strong> {selectedProduct.stock}</p>
+
             <p>
-              Amount: ₹
+              <strong>Amount:</strong> ₹
               {selectedProduct.price * (Number(quantity) || 0)}
             </p>
           </div>
         )}
 
-        <button style={styles.addBtn} onClick={addToCart}>
+        {/* ADD BUTTON */}
+        <button className="add-btn" onClick={addToCart}>
           Add To Cart
         </button>
 
         {/* CART */}
-        <div style={styles.cart}>
+        <div className="cart-section">
           <h2>Cart</h2>
 
           {cart.length === 0 && <p>No products added</p>}
 
           {cart.map((item, index) => (
-            <div key={index} style={styles.cartItem}>
+            <div key={index} className="cart-item">
               <div>
                 <strong>{item.name}</strong>
-                <p>
-                  ₹{item.price} × {item.quantity}
-                </p>
+                <p>₹{item.price} × {item.quantity}</p>
                 <p>Total: ₹{item.total}</p>
               </div>
 
               <button
-                style={styles.deleteBtn}
+                className="remove-btn"
                 onClick={() => removeItem(index)}
               >
                 Remove
@@ -185,7 +193,7 @@ function NewSale() {
         </div>
 
         {/* BILL */}
-        <div style={styles.billBox}>
+        <div className="bill-box">
           <h3>Bill Summary</h3>
 
           <p>Subtotal: ₹{grandTotal.toFixed(2)}</p>
@@ -197,120 +205,14 @@ function NewSale() {
           <h2>Final Amount: ₹{finalAmount.toFixed(2)}</h2>
         </div>
 
-        <button style={styles.saleBtn} onClick={completeSale}>
+        {/* COMPLETE SALE */}
+        <button className="sale-btn" onClick={completeSale}>
           Complete Sale
         </button>
+
       </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    minHeight: "100vh",
-    background: "#f4f6f9",
-    display: "flex",
-    justifyContent: "center",
-    padding: "30px",
-  },
-
-  card: {
-    width: "700px",
-    background: "#fff",
-    padding: "30px",
-    borderRadius: "12px",
-    boxShadow: "0 5px 20px rgba(0,0,0,0.1)",
-  },
-
-  header: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: "15px",
-  },
-
-  title: {
-    textAlign: "center",
-    color: "#2563eb",
-    flex: 1,
-  },
-
-  backBtn: {
-    background: "#2563eb",
-    color: "#fff",
-    border: "none",
-    padding: "10px 14px",
-    borderRadius: "6px",
-    cursor: "pointer",
-  },
-
-  input: {
-    width: "100%",
-    padding: "12px",
-    marginBottom: "15px",
-    border: "1px solid #ccc",
-    borderRadius: "6px",
-  },
-
-  detailsBox: {
-    background: "#f9fafb",
-    padding: "15px",
-    borderRadius: "8px",
-    marginBottom: "15px",
-  },
-
-  addBtn: {
-    width: "100%",
-    padding: "12px",
-    background: "#16a34a",
-    color: "#fff",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    marginBottom: "20px",
-  },
-
-  cart: {
-    marginTop: "20px",
-  },
-
-  cartItem: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    border: "1px solid #ddd",
-    padding: "10px",
-    marginBottom: "10px",
-    borderRadius: "6px",
-  },
-
-  deleteBtn: {
-    background: "#dc2626",
-    color: "#fff",
-    border: "none",
-    padding: "8px 12px",
-    borderRadius: "5px",
-    cursor: "pointer",
-  },
-
-  billBox: {
-    background: "#eef6ff",
-    padding: "15px",
-    borderRadius: "8px",
-    marginTop: "20px",
-  },
-
-  saleBtn: {
-    width: "100%",
-    padding: "14px",
-    background: "#2563eb",
-    color: "#fff",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "16px",
-    marginTop: "20px",
-  },
-};
 
 export default NewSale;

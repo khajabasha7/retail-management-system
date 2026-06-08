@@ -1,77 +1,26 @@
-.inventory-container {
-  min-height: 100vh;
-  background: #f4f6f9;
-}
-
-/* Navbar */
-.inventory-navbar {
-  background: #1e3c72;
-  color: white;
-  padding: 15px 25px;
-
+.cashier-navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-.inventory-navbar h2 {
-  margin: 0;
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
-.back-btn,
-.home-btn {
-  background: white;
-  color: #1e3c72;
+.network-status {
+  min-width: 100px;
+  text-align: center;
+}
 
-  border: none;
-  padding: 10px 18px;
-
-  border-radius: 6px;
-  cursor: pointer;
+.online {
+  color: #22c55e;
   font-weight: bold;
 }
 
-.back-btn:hover,
-.home-btn:hover {
-  background: #e5e7eb;
-}
-
-/* Content */
-.inventory-content {
-  padding: 30px;
-}
-
-.inventory-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.inventory-table th {
-  background: #2563eb;
-  color: white;
-  padding: 12px;
-}
-
-.inventory-table td {
-  padding: 12px;
-  border-bottom: 1px solid #ddd;
-}
-
-.inventory-table tr:hover {
-  background: #f9fafb;
-}
-
-.available {
-  color: green;
-  font-weight: bold;
-}
-
-.low-stock {
-  color: red;
+.offline {
+  color: #ef4444;
   font-weight: bold;
 }
