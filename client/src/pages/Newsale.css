@@ -142,3 +142,54 @@
 .sale-btn:hover {
   background: #1976d2;
 }
+
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+
+  .container {
+    padding: 10px;
+  }
+
+  .card {
+    max-width: 100%;
+    padding: 15px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .title {
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .backBtn {
+    width: 100%;
+  }
+
+  .input {
+    font-size: 16px;
+  }
+
+  .cartItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .deleteBtn {
+    width: 100%;
+  }
+
+  .addBtn,
+  .saleBtn {
+    width: 100%;
+  }
+
+  .billBox h2 {
+    font-size: 20px;
+  }
+}
