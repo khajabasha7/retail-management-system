@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import API from "../api/api";
 import { useNavigate } from "react-router-dom";
-import "./NewSale.css";
+import "./Newsale.css";
 
 
 function NewSale() {
