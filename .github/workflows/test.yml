@@ -47,3 +47,6 @@ jobs:
     - name: Frontend Build
       working-directory: client
       run: npm run build
+
+
+      # CI test
