@@ -13,7 +13,7 @@ import Products from "./pages/Products";
 import StockManagement from "./pages/StockManagement";
 import SalesReports from "./pages/SalesReports";
 
-import NewSale from "./pages/NewSale";
+import NewSale from "./pages/Newsale";
 import CashierInventory from "./pages/CashierInventory";
 import Transactions from "./pages/Transactions";
 
