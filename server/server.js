@@ -52,7 +52,11 @@ const app = express();
 
 // middleware
 
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+    origin: "https://your-vercel-app.vercel.app",
+    credentials: true
+}));
 
 app.use(express.json());
 
