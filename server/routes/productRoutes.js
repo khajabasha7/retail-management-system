@@ -101,13 +101,9 @@ router.get("/", async (req,res)=>{
 
 try{
 
-
 const {
-search="",
-limit=5,
-page=1
+search=""
 }=req.query;
-
 
 
 const query = search
@@ -122,37 +118,26 @@ $options:"i"
 {};
 
 
+const products = await Product.find(query)
+.sort({createdAt:-1});
 
-const products =
-await Product.find(query)
 
-.skip(
-(page-1)*Number(limit)
-)
-
-.limit(
-Number(limit)
-);
-
+console.log("Products sent:",products);
 
 
 res.json(products);
 
 
-
 }
 catch(err){
-
 
 res.status(500).json({
 error:err.message
 });
 
-
 }
 
 });
-
 
 
 
