@@ -155,20 +155,42 @@ app.use(
 
 // MongoDB
 
+// mongoose.connect(process.env.MONGO_URI)
+
+// .then(()=>{
+
+//  console.log("MongoDB Connected");
+
+// })
+
+// .catch((err)=>{
+
+//  console.log("MongoDB Error:",err);
+
+// });
+
 mongoose.connect(process.env.MONGO_URI)
 
 .then(()=>{
 
- console.log("MongoDB Connected");
+console.log("MongoDB Connected");
 
-})
 
-.catch((err)=>{
+app.listen(PORT,()=>{
 
- console.log("MongoDB Error:",err);
+console.log(
+`Server running on port ${PORT}`
+);
 
 });
 
+
+})
+.catch(err=>{
+
+console.log(err);
+
+});
 
 
 // Test route

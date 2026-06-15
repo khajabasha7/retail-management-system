@@ -97,32 +97,54 @@ router.post("/", authMiddleware, async (req, res) => {
  */
 
 
+// router.get("/", async (req,res)=>{
+
+// try{
+
+// const {
+// search=""
+// }=req.query;
+
+
+// const query = search
+// ?
+// {
+// name:{
+// $regex:search,
+// $options:"i"
+// }
+// }
+// :
+// {};
+
+
+// const products = await Product.find(query)
+// .sort({createdAt:-1});
+
+
+// console.log("Products sent:",products);
+
+
+// res.json(products);
+
+
+// }
+// catch(err){
+
+// res.status(500).json({
+// error:err.message
+// });
+
+// }
+
+// });
+
 router.get("/", async (req,res)=>{
 
 try{
 
-const {
-search=""
-}=req.query;
 
-
-const query = search
-?
-{
-name:{
-$regex:search,
-$options:"i"
-}
-}
-:
-{};
-
-
-const products = await Product.find(query)
-.sort({createdAt:-1});
-
-
-console.log("Products sent:",products);
+const products = await Product.find();
 
 
 res.json(products);
@@ -131,14 +153,18 @@ res.json(products);
 }
 catch(err){
 
+
+console.log(err);
+
+
 res.status(500).json({
 error:err.message
 });
 
+
 }
 
 });
-
 
 
 
