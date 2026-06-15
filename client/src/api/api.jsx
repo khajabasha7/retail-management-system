@@ -1,7 +1,9 @@
-import axios from "axios";
+const cors = require("cors");
 
-const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-});
-
-export default API;
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://your-real-vercel-url.vercel.app"
+  ],
+  credentials: true
+}));
