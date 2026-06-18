@@ -129,4 +129,24 @@ Database:
 
 ---
 
-# 📂 Project Structure
+
+
+# ⚙️ Installation
+
+## Clone Repository
+
+```bash
+git clone https://github.com/yourusername/retail-management-system.git
+
+---
+
+👨‍💻 Author
+
+
+Khaja Basha Shaik
+
+
+GitHub:
+
+
+https://github.com/khajabasha7
