@@ -138,9 +138,10 @@ Database:
 ```bash
 git clone https://github.com/yourusername/retail-management-system.git
 
----
 
-👨‍💻 Author
+```
+---
+##👨‍💻 Author
 
 
 Khaja Basha Shaik
