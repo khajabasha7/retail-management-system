@@ -12,21 +12,7 @@ Each role has different permissions and features.
 
 ---
 
-# 🚀 Live Demo
 
-Frontend:
-
-https://your-vercel-url.vercel.app
-
-Backend API:
-
-https://retail-management-system-eieb.onrender.com
-
-Swagger API Documentation:
-
-https://retail-management-system-eieb.onrender.com/api-docs
-
----
 
 # 📌 Features
 
